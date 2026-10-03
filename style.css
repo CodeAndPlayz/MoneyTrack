@@ -1068,7 +1068,6 @@ tbody tr:last-child td {
 }
 
 
-/* Theme and settings */
 body.dark-mode {
   --bg: #101214;
   --surface: #181a1e;
@@ -1222,7 +1221,6 @@ body.dark-mode .settings-card {
 }
 
 
-/* Dark mode final overrides */
 body.dark-mode {
   color-scheme: dark;
   background: #101214;
@@ -1281,14 +1279,18 @@ body.dark-mode .primary-button {
 body.dark-mode .secondary-button,
 body.dark-mode .outline-button,
 body.dark-mode .icon-button,
-body.dark-mode .close-button,
-body.dark-mode 
+body.dark-mode .close-button {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
 
 body.dark-mode .secondary-button:hover,
 body.dark-mode .outline-button:hover,
 body.dark-mode .icon-button:hover,
-body.dark-mode .close-button:hover,
-body.dark-mode 
+body.dark-mode .close-button:hover {
+  background: var(--surface-2);
+}
 
 body.dark-mode th,
 body.dark-mode td {

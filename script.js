@@ -149,7 +149,6 @@ function setupCurrency() {
 }
 
 function setupTheme() {
-  // MoneyTrack uses dark mode only.
   document.body.classList.add("dark-mode");
 }
 
