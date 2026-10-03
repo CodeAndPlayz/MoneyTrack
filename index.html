@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MoneyTrack - a simple personal finance tracker built with HTML, CSS and JavaScript.">
+  <title>MoneyTrack — Personal Finance Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <strong>MoneyTrack</strong>
+          <span>Personal Finance</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">⌂</span>
+          Dashboard
+        </button>
+        <button class="nav-item" data-section="transactions">
+          <span class="nav-icon">↕</span>
+          Transactions
+        </button>
+        <button class="nav-item" data-section="budget">
+          <span class="nav-icon">◫</span>
+          Budget
+        </button>
+      </nav>
+
+      <div class="settings-card">
+        <div class="setting-row">
+          <div>
+            <strong>Currency</strong>
+            <span>Display currency</span>
+          </div>
+          <select id="currencySelect" aria-label="Currency">
+            <option value="PHP">PHP — Philippine Peso (₱)</option>
+            <option value="USD">USD — US Dollar ($)</option>
+            <option value="GBP">GBP — British Pound (£)</option>
+            <option value="EUR">EUR — Euro (€)</option>
+            <option value="JPY">JPY — Japanese Yen (¥)</option>
+            <option value="CAD">CAD — Canadian Dollar (C$)</option>
+            <option value="AUD">AUD — Australian Dollar (A$)</option>
+            <option value="SGD">SGD — Singapore Dollar (S$)</option>
+            <option value="HKD">HKD — Hong Kong Dollar (HK$)</option>
+            <option value="CNY">CNY — Chinese Yuan (¥)</option>
+            <option value="KRW">KRW — South Korean Won (₩)</option>
+            <option value="INR">INR — Indian Rupee (₹)</option>
+          </select>
+        </div></div>
+
+      <div class="sidebar-bottom">
+        <div class="storage-status">
+          <span class="status-dot"></span>
+          Data saved locally
+        </div>
+        <button class="outline-button" id="resetDataBtn">Reset data</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenuBtn" aria-label="Open menu">☰</button>
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="secondary-button" id="importBtn">Import CSV</button>
+          <button class="primary-button" id="quickAddBtn">+ Add transaction</button>
+          <div class="topbar-logo" aria-label="MoneyTrack logo">M</div>
+          <input type="file" id="csvInput" accept=".csv,text/csv" hidden>
+        </div>
+      </header>
+
+      <section class="section active" id="dashboardSection">
+        <div class="welcome">
+          <div>
+            <h2>Welcome back.</h2>
+            <p>Keep your spending organized and see where your money is going.</p>
+          </div>
+          <div class="month-navigator" aria-label="Dashboard month navigation">
+            <button class="month-nav-button" id="prevMonthBtn" type="button" aria-label="Previous month">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+            </button>
+            <div class="month-label" id="dashboardMonthLabel">January 2026</div>
+            <button class="month-nav-button" id="nextMonthBtn" type="button" aria-label="Next month">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+            </button>
+            <button class="month-filter-button" id="monthPickerBtn" type="button" aria-label="Choose month" title="Choose month">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+            </button>
+            <select id="dashboardMonth" class="month-picker-select" aria-label="Choose dashboard month"></select>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-card balance-card">
+            <div class="card-label">Total balance</div>
+            <div class="summary-value" id="balanceValue">₱0.00</div>
+            <div class="card-foot" id="balanceFoot">Income minus expenses</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">Income</div>
+            <div class="summary-value positive" id="incomeValue">₱0.00</div>
+            <div class="card-foot" id="incomeFoot">This month</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">Expenses</div>
+            <div class="summary-value negative" id="expenseValue">₱0.00</div>
+            <div class="card-foot" id="expenseFoot">This month</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">Savings rate</div>
+            <div class="summary-value" id="savingsValue">0%</div>
+            <div class="card-foot">Based on selected month</div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Spending by category</h3>
+                <p>Where your expenses went this month</p>
+              </div>
+            </div>
+            <div class="category-chart" id="categoryChart"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Budget progress</h3>
+                <p>Your current monthly limits</p>
+              </div>
+              <button class="text-button" data-section-link="budget">Manage</button>
+            </div>
+            <div id="dashboardBudgets" class="budget-list"></div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Recent transactions</h3>
+              <p>Your latest money activity</p>
+            </div>
+            <button class="text-button" data-section-link="transactions">View all</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th class="align-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="recentTransactions"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="section" id="transactionsSection">
+        <div class="section-heading">
+          <div>
+            <h2>Transactions</h2>
+            <p>Add, edit, search and organize your income and expenses.</p>
+          </div>
+          <button class="primary-button" id="transactionsAddBtn">+ Add transaction</button>
+        </div>
+
+        <div class="filters panel">
+          <div class="field search-field">
+            <label for="searchInput">Search</label>
+            <input id="searchInput" type="search" placeholder="Search transactions...">
+          </div>
+          <div class="field">
+            <label for="typeFilter">Type</label>
+            <select id="typeFilter">
+              <option value="all">All types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="categoryFilter">Category</label>
+            <select id="categoryFilter">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="monthFilter">Month</label>
+            <select id="monthFilter">
+              <option value="all">All months</option>
+            </select>
+          </div>
+          <button class="secondary-button filter-clear" id="clearFiltersBtn">Clear</button>
+        </div>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>All transactions</h3>
+              <p id="transactionCount">0 transactions</p>
+            </div>
+            <button class="secondary-button" id="exportBtn">Export CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table class="transaction-table">
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th class="align-right">Amount</th>
+                  <th class="align-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsTable"></tbody>
+            </table>
+          </div>
+          <div class="empty-state hidden" id="transactionEmpty">
+            <div class="empty-icon">₱</div>
+            <h3>No transactions found</h3>
+            <p>Try changing your filters or add your first transaction.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="section" id="budgetSection">
+        <div class="section-heading">
+          <div>
+            <h2>Budget</h2>
+            <p>Set monthly spending limits and monitor your progress.</p>
+          </div>
+          <button class="primary-button" id="budgetAddBtn">+ Add budget</button>
+        </div>
+
+        <div class="budget-overview">
+          <article class="summary-card">
+            <div class="card-label">Total budget</div>
+            <div class="summary-value" id="totalBudgetValue">₱0.00</div>
+            <div class="card-foot">Across all categories</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">Spent</div>
+            <div class="summary-value negative" id="totalBudgetSpent">₱0.00</div>
+            <div class="card-foot">For selected month</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">Remaining</div>
+            <div class="summary-value positive" id="totalBudgetRemaining">₱0.00</div>
+            <div class="card-foot">Budget minus spending</div>
+          </article>
+        </div>
+
+        <div class="budget-month-row">
+          <label for="budgetMonth">Budget month</label>
+          <select id="budgetMonth" class="select-control"></select>
+        </div>
+
+        <div class="budget-cards" id="budgetCards"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="transactionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">MoneyTrack</p>
+          <h2 id="transactionModalTitle">Add transaction</h2>
+        </div>
+        <button class="close-button" data-close-modal="transactionModal" aria-label="Close">×</button>
+      </div>
+      <form id="transactionForm">
+        <input type="hidden" id="transactionId">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="transactionName">Description</label>
+            <input id="transactionName" type="text" maxlength="80" placeholder="e.g. Grocery shopping" required>
+          </div>
+          <div class="field">
+            <label for="transactionType">Type</label>
+            <select id="transactionType" required>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="transactionAmount">Amount</label>
+            <div class="money-input">
+              <span>₱</span>
+              <input id="transactionAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="transactionCategory">Category</label>
+            <select id="transactionCategory" required></select>
+          </div>
+          <div class="field">
+            <label for="transactionDate">Date</label>
+            <input id="transactionDate" type="date" required>
+          </div>
+          <div class="field full">
+            <label for="transactionNote">Note <span>(optional)</span></label>
+            <textarea id="transactionNote" rows="3" maxlength="180" placeholder="Add a note..."></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" data-close-modal="transactionModal">Cancel</button>
+          <button type="submit" class="primary-button">Save transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="budgetModal">
+    <div class="modal small-modal">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">MoneyTrack</p>
+          <h2 id="budgetModalTitle">Add budget</h2>
+        </div>
+        <button class="close-button" data-close-modal="budgetModal" aria-label="Close">×</button>
+      </div>
+      <form id="budgetForm">
+        <input type="hidden" id="budgetId">
+        <div class="field">
+          <label for="budgetCategory">Category</label>
+          <select id="budgetCategory" required></select>
+        </div>
+        <div class="field">
+          <label for="budgetAmount">Monthly limit</label>
+          <div class="money-input">
+            <span>₱</span>
+            <input id="budgetAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="budgetFormMonth">Month</label>
+          <input id="budgetFormMonth" type="month" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" data-close-modal="budgetModal">Cancel</button>
+          <button type="submit" class="primary-button">Save budget</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
